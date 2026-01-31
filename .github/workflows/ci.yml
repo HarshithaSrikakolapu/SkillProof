@@ -1,0 +1,45 @@
+name: Skill Validation CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  backend-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+    - name: Install dependencies
+      run: |
+        cd backend
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Run Tests
+      run: |
+        cd backend
+        # Setup temp db logic inside test or use sqlite
+        # python test_e2e.py # Note: E2E requires running server, might need unit tests instead
+        # For now, just check syntax/imports works
+        python -c "import app"
+
+  frontend-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.0'
+    - name: Install dependencies
+      run: |
+        cd frontend
+        flutter pub get
+    - name: Build Web
+      run: |
+        cd frontend
+        flutter build web
