@@ -41,6 +41,19 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> checkAuthStatus() async {
+    final token = await _authService.getToken();
+    if (token != null) {
+      try {
+         _user = await _authService.getProfile(); 
+         _isLoading = false;
+         notifyListeners();
+      } catch (e) {
+        await logout();
+      }
+    }
+  }
+
   Future<void> logout() async {
     await _authService.logout();
     _user = null;

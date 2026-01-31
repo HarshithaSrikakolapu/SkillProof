@@ -22,8 +22,22 @@ void main() {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Check for persisted token on startup
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<AuthProvider>(context, listen: false).checkAuthStatus();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +45,19 @@ class MyApp extends StatelessWidget {
       title: 'SkillProof',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      initialRoute: '/login',
+      initialRoute: '/login', // You might want a Splash screen here ideally
       routes: {
-        '/login': (context) => const LoginScreen(),
+        '/login': (context) => Consumer<AuthProvider>(
+          builder: (context, auth, _) {
+            // Redirect if already authenticated
+            if (auth.isAuthenticated) {
+              return auth.user?.role == 'Employer' 
+                  ? const EmployerDashboardScreen() 
+                  : const SkillsListScreen();
+            }
+            return const LoginScreen();
+          },
+        ),
         '/register': (context) => const SignupScreen(),
         '/home': (context) => const SkillsListScreen(),
         '/user_certificates': (context) => const CertificateListScreen(),

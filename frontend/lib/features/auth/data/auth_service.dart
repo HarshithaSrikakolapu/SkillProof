@@ -45,4 +45,22 @@ class AuthService {
   Future<void> logout() async {
     await _client.storage.delete(key: 'accessToken');
   }
+
+  Future<String?> getToken() async {
+    return await _client.storage.read(key: 'accessToken');
+  }
+
+  Future<User?> getProfile() async {
+    try {
+      final response = await _client.dio.get('/auth/me'); // Assuming endpoint exists
+      if (response.statusCode == 200) {
+        return User.fromJson(response.data);
+      }
+    } catch (e) {
+      // Token might be invalid
+      await logout();
+      throw Exception('Failed to load profile: ${e.toString()}');
+    }
+    return null;
+  }
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/features/skills/data/assessment_service.dart';
 import 'package:frontend/features/skills/data/skill_model.dart';
 import 'package:frontend/features/skills/presentation/screens/assessment_list_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:frontend/features/auth/presentation/auth_provider.dart';
 
 class SkillsListScreen extends StatefulWidget {
   const SkillsListScreen({super.key});
@@ -85,10 +87,13 @@ class _SkillsListScreenState extends State<SkillsListScreen> {
                        child: const Text('Cancel'),
                      ),
                      TextButton(
-                       onPressed: () {
+                       onPressed: () async {
                          Navigator.pop(context); // Close dialog
-                         // Perform logout
-                         Navigator.pushReplacementNamed(context, '/login');
+                         // Perform logout using Provider
+                         await Provider.of<AuthProvider>(context, listen: false).logout();
+                         if (context.mounted) {
+                            Navigator.pushReplacementNamed(context, '/login');
+                         }
                        },
                        child: const Text('Logout', style: TextStyle(color: Colors.red)),
                      ),
