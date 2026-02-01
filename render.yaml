@@ -3,7 +3,7 @@ services:
     name: skillproof-backend
     env: python
     rootDir: backend
-    buildCommand: pip install -r requirements.txt
+    pip install -r requirements.txt
     startCommand: gunicorn run:app
     envVars:
       - key: PYTHON_VERSION
